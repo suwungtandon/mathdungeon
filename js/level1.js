@@ -47,6 +47,10 @@ var level1 = new Phaser.Class({
         ladders.create(19 * 16 - 8, 20 * 16 / 2, 'ladder');
         ladders.create(39 * 16 - 8, 20 * 16 / 2, 'ladder');
 
+        // Add level ending ladder
+        laddersEnd = this.physics.add.staticGroup();
+        laddersEnd.create(59*16-8, 20*16/2, 'ladder');
+
         // Add player
         player = this.physics.add.sprite(2*16, 10*16, 'player');
         //player.setCollideWorldBounds(true);
@@ -67,6 +71,7 @@ var level1 = new Phaser.Class({
         this.physics.add.collider(player, walls);
         // Collide player with the ladder to go to the next level
         this.physics.add.collider(player, ladders, this.nextStage, null, this);
+        this.physics.add.collider(player, laddersEnd, this.nextLevel, null, this);
 
         // Test text
         text = this.add.text(16, 16, 'test', { fontSize: '32px', fill: '#fff' });
@@ -97,5 +102,9 @@ var level1 = new Phaser.Class({
         this.cameras.main.fadeIn(600);
         player.x += 16 * 3;
     },
+
+    nextLevel: function nextLevel(player, laddersEnd) {
+        this.scene.start('level1');
+    }
 
 })
