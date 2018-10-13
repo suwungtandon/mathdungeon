@@ -28,7 +28,7 @@ var level1 = new Phaser.Class({
 
     create: function create() {
         // Add ground
-        this.add.image(60*16 / 2, 20*16 / 2, 'ground');
+        this.add.image(60 * 16 / 2, 20 * 16 / 2, 'ground');
 
         // Add walls
         walls = this.physics.add.staticGroup();
@@ -37,19 +37,16 @@ var level1 = new Phaser.Class({
         walls.create(60 * 16 - 8, 20 * 16 / 2, 'walls_right');
         walls.create(20 * 16, 20 * 16 / 2, 'walls_mid');
         walls.create(40 * 16, 20 * 16 / 2, 'walls_mid');
-        walls.create(60 * 16 / 2, 20*16 - 8, 'walls_lower');
+        walls.create(60 * 16 / 2, 20 * 16 - 8, 'walls_lower');
 
         // Add ladders
         ladders = this.physics.add.staticGroup();
-        ladders.create(19 * 16 - 8, 20 * 16 / 2, 'ladder');
-        ladders.create(39 * 16 - 8, 20 * 16 / 2, 'ladder');
-
-        // Add level ending ladder
-        laddersEnd = this.physics.add.staticGroup();
-        laddersEnd.create(59*16-8, 20*16/2, 'ladder');
+        ladders.create(19 * 16 - 8, 20 * 16 / 2, 'ladder'); // room 1->2
+        ladders.create(39 * 16 - 8, 20 * 16 / 2, 'ladder'); // room 2->3
+        ladders.create(59 * 16 - 8, 20 * 16 / 2, 'ladder'); // next level
 
         // Add player
-        player = this.physics.add.sprite(2*16, 10*16, 'player');
+        player = this.physics.add.sprite(2 * 16, 10 * 16, 'player');
         //player.setCollideWorldBounds(true);
 
         // Add player animations
@@ -66,21 +63,51 @@ var level1 = new Phaser.Class({
 
         // Collide player with the walls
         this.physics.add.collider(player, walls);
-        // Collide player with the ladder to go to the next room
-        this.physics.add.collider(player, ladders, function (player, ladders) { 
-            this.cameras.main.fadeIn(600);
-            player.x += 16 * 3;
-        }, null, this);
-        // Collide player with the last ladder to go to the next level
-        this.physics.add.collider(player, laddersEnd, function(player, laddersEnd) {
-            this.scene.start('level2');
-        }, null, this);
-
-        // Test text
-        text = this.add.text(16, 16, 'test', { fontSize: '32px', fill: '#fff' });
 
         // Camera controls
         this.cameras.main.startFollow(player, true, 0.05, 0, 05);
+
+        // -------------------=[ LEVEL 1 ]=-------------------------------
+        text1 = this.add.text(3, -22, 'Room 1: Complete the equations', {
+            fontSize: '16px',
+            fill: '#ddd',
+            fontFamily: 'Droid Sans',
+            backgroundColor: '#88f'
+        });
+
+        // Collider for room 1->2
+        this.physics.add.collider(player, ladders.children.entries[0], function (player, ladder) {
+            this.cameras.main.fadeIn(600);
+            text1.destroy();
+            player.x += 16 * 3;
+            text2 = this.add.text(3+20*16, -22, 'Room 2: Whatevs', {
+                fontSize: '16px',
+                fill: '#ddd',
+                fontFamily: 'Droid Sans',
+                backgroundColor: '#88f'
+            });
+        }, null, this);
+
+        // -------------------=[ LEVEL 2 ]=-------------------------------
+        // Collider for room 2->3
+        this.physics.add.collider(player, ladders.children.entries[1], function (player, ladder) {
+            this.cameras.main.fadeIn(600);
+            text2.destroy();
+            player.x += 16 * 3;
+            text3 = this.add.text(3+40*16, -22, 'Room 3: Go die', {
+                fontSize: '16px',
+                fill: '#ddd',
+                fontFamily: 'Droid Sans',
+                backgroundColor: '#88f'
+            });
+        }, null, this);
+
+
+
+        // Collide player with the last ladder to go to the next level
+        this.physics.add.collider(player, ladders.children.entries[2], function (player, ladder) {
+            this.scene.start('level2');
+        }, null, this);
     },
 
     update: function update() {
