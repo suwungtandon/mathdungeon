@@ -33,8 +33,8 @@ var level1 = new Phaser.Class({
         this.load.image('walls_mid', 'assets/walls_mid.png');
         // Load the player as a spritesheet
         this.load.spritesheet('player', 'assets/player.png', { frameWidth: 16, frameHeight: 19 });
-        // 16px ladder
-        this.load.image('ladder', 'assets/ladder.png');
+        // 16px gate
+        this.load.image('gate', 'assets/gate.png');
         // Menu icon
         this.load.image('menu', 'assets/menu.png');
         // Box
@@ -47,11 +47,11 @@ var level1 = new Phaser.Class({
         // Add ground
         this.add.image(60 * 16 / 2, 20 * 16 / 2, 'ground');
 
-        // Add ladders
-        ladders = this.physics.add.staticGroup();
-        ladders.create(19 * 16 - 8, 20 * 16 / 2, 'ladder').setVisible(false); // room 1->2
-        ladders.create(39 * 16 - 8, 20 * 16 / 2, 'ladder').setVisible(false); // room 2->3
-        ladders.create(59 * 16 - 8, 20 * 16 / 2, 'ladder').setVisible(false); // next level
+        // Add gates
+        gates = this.physics.add.staticGroup();
+        gates.create(19 * 16 - 8, 20 * 16 / 2, 'gate').setVisible(false); // room 1->2
+        gates.create(39 * 16 - 8, 20 * 16 / 2, 'gate').setVisible(false); // room 2->3
+        gates.create(59 * 16 - 8, 20 * 16 / 2, 'gate').setVisible(false); // next level
 
         // Add walls
         walls = this.physics.add.staticGroup();
@@ -158,11 +158,11 @@ var level1 = new Phaser.Class({
 
                 success -= 1;
                 if (!success) {
-                    // Flash the camera so that the player notices the ladder to the next room
+                    // Flash the camera so that the player notices the gate to the next room
                     this.cameras.main.flash();
 
-                    // Set the ladder visible
-                    ladders.children.entries[0].setVisible(true);
+                    // Set the gate visible
+                    gates.children.entries[0].setVisible(true);
                 }
             }, null, this); // DONT FORGET THIS!!!
 
@@ -251,11 +251,11 @@ var level1 = new Phaser.Class({
 
                 success2 -= 1;
                 if (!success2) {
-                    // Flash the camera so that the player notices the ladder to the next room
+                    // Flash the camera so that the player notices the gate to the next room
                     this.cameras.main.flash();
 
-                    // Set the ladder visible
-                    ladders.children.entries[1].setVisible(true);
+                    // Set the gate visible
+                    gates.children.entries[1].setVisible(true);
                 }
             }, null, this); // DONT FORGET THIS!!!
 
@@ -267,24 +267,147 @@ var level1 = new Phaser.Class({
         // --------------------------------------------------------------------------------------
         // ------------------------------=[ ROOM 3 ]=--------------------------------------------
         // --------------------------------------------------------------------------------------
-        text3 = this.add.text(3 + 40 * 16, -22, 'Room 3: Go die', {
+        text3 = this.add.text(3 + 40 * 16, -22, 'Room 3: Complete the equations', {
             fontSize: '16px',
             fill: '#ddd',
             fontFamily: 'Droid Sans',
             backgroundColor: '#88f'
         }).setVisible(false);
 
+        var success3 = 4;
+        var baseX_2 = 40 * 16;
+
+        // Equations
+        var questions3 = [];
+        var answers3 = [];
+        zone3 = this.physics.add.staticGroup();
+        for (var i = 0; i < 4; i++) {
+
+            // First two equations are addition, the remaining two are subtractions
+            if (i < 2) {
+                var op = ' + ';
+                // Generate two random numbers between 1-100
+                n1 = rand();
+                n2 = rand();
+                while (n1 + n2 > 100) {
+                    n1 = rand();
+                    n2 = rand();
+                }
+                var result = n1 + n2;
+            } else {
+                var op = ' - ';
+                // Generate two random numbers between 1-100
+                n1 = rand();
+                n2 = rand();
+                while (n1 <= n2) {
+                    n1 = rand();
+                    n2 = rand();
+                }
+                var result = n1 - n2;
+            }
+
+            if (i % 2) {
+                var qstring = '  ' + op + n2.toString() + ' = ' + result.toString();
+                var dropZoneX = baseX_2 + 7 * 16;
+            } else {
+                var qstring = n1.toString() + op + '  ' + ' = ' + result.toString();
+                var dropZoneX = baseX_2 + 11 * 16;
+            }
+
+            // Print the equation on the floor
+            question = this.add.text(baseX_2 + 6 * 16, (2 + 5 * i) * 16, qstring, {
+                fontSize: '20px',
+                fontFamily: 'Droid Sans Mono',
+                fill: '#fff'
+            }).setVisible(false);
+            questions3[i] = question;
+
+            // Drop zone for the answer
+            zone3.create(dropZoneX, (2 + 5 * i) * 16 + 12, 'zone').setVisible(false);
+
+            // Create the answer in a random coordinate
+            var coords = rand2(baseX_2 + 3 * 16, baseX_2 + 17 * 16, 9 * 16, 11 * 16);
+            ans = this.add.text(coords.x, coords.y, (i % 2) ? n1.toString() : n2.toString(), {
+                fontSize: '20px',
+                fontFamily: 'Droid Sans Mono',
+                fill: '#fff',
+                backgroundColor: '#000'
+            }).setVisible(false);
+            answers3[i] = ans;
+
+            // Enable physics for the answer object
+            this.physics.world.enable(ans);
+
+            // Player can pick up the answer object and carry it around
+            this.physics.add.overlap(player, ans, function (player, ans) {
+                ans.setX(player.getCenter().x);
+                ans.setY(player.getCenter().y);
+            }, null, this);
+
+            // As soon as the answer overlaps with the correct drop zone,
+            // it is destroyed and a new one with green font is created.
+            // This was done this way because of engine limitations.
+            this.physics.add.overlap(zone3.children.entries[i], ans, function (zone, ans) {
+
+                // Destroy the zone so that success cannot be decremented more than once
+                zone.destroy();
+
+                // Get the current player coordinates
+                var coords = player.getCenter();
+
+                // Recreate the answer object with green font
+                this.add.text(coords.x, coords.y, ans.text, {
+                    fontSize: '20px',
+                    fontFamily: 'Droid Sans Mono',
+                    fill: '#0f0',
+                    backgroundColor: '#000'
+                });
+
+                // Destroy the current answer object
+                ans.destroy();
+
+                success3 -= 1;
+                if (!success3) {
+                    // Flash the camera so that the player notices the gate to the next room
+                    this.cameras.main.flash();
+
+                    // Set the gate visible
+                    gates.children.entries[2].setVisible(true);
+                }
+            }, null, this); // DONT FORGET THIS!!!
+
+            // Do not let the answers go through walls (Does it even work?)
+            this.physics.add.collider(walls, ans);
+        }
+
 
 
         // --------------------------------------------------------------------------------------
         // --------------------------=[ ROOM TRANSITIONS ]---------------------------------------
         // --------------------------------------------------------------------------------------
+
+        // Saving clear times of rooms
+        var clearTimes = [];
+        var initTime = new Date();
+
         // Collider for room 1->2
-        this.physics.add.collider(player, ladders.children.entries[0], function (player, ladder) {
+        this.physics.add.collider(player, gates.children.entries[0], function (player, gate) {
             if (!success) {
+                success = 1;
+
+                // Get clear time
+                var currTime = new Date();
+                clearTimes[0] = (currTime - initTime) / 1000;
+                initTime = currTime;
+
                 this.cameras.main.fadeIn(600);
                 text1.destroy();
+
+                // Get the player across
                 player.x += 16 * 3;
+
+                // Make next room's challenge visible
+                text2.setVisible(true);
                 for (var i = 0; i < 4; i++) {
                     questions2[i].setVisible(true);
                     answers2[i].setVisible(true);
@@ -294,20 +417,55 @@ var level1 = new Phaser.Class({
         }, null, this);
 
         // Collider for room 2->3
-        this.physics.add.collider(player, ladders.children.entries[1], function (player, ladder) {
-            this.cameras.main.fadeIn(600);
-            text2.destroy();
-            player.x += 16 * 3;
-            text3.setVisible(true);
+        this.physics.add.collider(player, gates.children.entries[1], function (player, gate) {
+            if (!success2) {
+                success2 = 1;
+
+                // Get clear time
+                currTime = new Date();
+                clearTimes[1] = (currTime - initTime) / 1000;
+                initTime = currTime;
+
+                this.cameras.main.fadeIn(600);
+                text2.destroy();
+
+                // Get the player across
+                player.x += 16 * 3;
+
+                // Make next room's challenge visible
+                text3.setVisible(true);
+                for (var i = 0; i < 4; i++) {
+                    questions3[i].setVisible(true);
+                    answers3[i].setVisible(true);
+                    zone3.children.entries[i].setVisible(true);
+                }
+            }
         }, null, this);
 
-        // Collide player with the last ladder to go to the next level
-        this.physics.add.collider(player, ladders.children.entries[2], function (player, ladder) {
-            this.cameras.main.fadeIn(600);
-            this.scene.transition({
-                target: 'level2',
-                duration: 250
-            })
+        // Collide player with the last gate to go to the next level
+        this.physics.add.collider(player, gates.children.entries[2], function (player, gate) {
+            if (!success3) {
+                success3 = 1;
+
+                // Get clear time
+                currTime = new Date();
+                clearTimes[2] = (currTime - initTime) / 1000;
+                initTime = currTime;
+                // console.log(clearTimes);
+
+                this.add.text(50 * 16, 8 * 16, 'Level Complete!', {
+                    fontSize: '32px',
+                    fill: '#cfc',
+                    fontFamily: 'Droid Sans',
+                    backgroundColor: '#222'
+                });
+                this.cameras.main.fadeOut(1000);
+                this.scene.transition({
+                    target: 'level2',
+                    duration: 2000,
+                    moveBelow: true
+                });
+            }
         }, null, this);
     },
 
