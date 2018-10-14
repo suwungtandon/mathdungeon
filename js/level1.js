@@ -306,7 +306,7 @@ var level1 = new Phaser.Class({
             this.cameras.main.fadeIn(600);
             this.scene.transition({
                 target: 'level2',
-                duration: 100
+                duration: 250
             })
         }, null, this);
     },
