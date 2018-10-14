@@ -121,8 +121,8 @@ var level1 = new Phaser.Class({
             this.physics.add.overlap(zone, ans, function(ans, zone) {
                 zone.destroy();
                 var coords = player.getCenter();
-                this.add.text(coords.x, coords.y, 'Correct!',  {
-                    fontSize: '12px',
+                this.add.text(coords.x, coords.y, ans.text,  {
+                    fontSize: '20px',
                     fontFamily: 'Droid Sans Mono',
                     fill: '#0f0',
                     backgroundColor: '#000'

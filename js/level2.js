@@ -79,7 +79,7 @@ var level2 = new Phaser.Class({
 
         // Collide player with the walls
         this.physics.add.collider(player,box,this.printBoxes);
-        this.physics.add.collider(box,box);
+        this.physics.add.collider(box);
         this.physics.add.collider(player, walls);
         // Collide player with the ladder to go to the next level
         this.physics.add.collider(player, ladders, this.nextStage, null, this);
