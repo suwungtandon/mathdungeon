@@ -109,7 +109,7 @@ var level1 = new Phaser.Class({
             // Print the equation on the floor
             question = this.add.text(6 * 16, (2 + 5 * i) * 16, n1.toString() + ' + ' + n2.toString() + ' =', {
                 fontSize: '20px',
-                fontFamily: 'Droid Sans Mono',
+                fontFamily: 'Monospace',
                 fill: '#fff'
             });
 
@@ -121,7 +121,7 @@ var level1 = new Phaser.Class({
             var coords = rand2(16, 10 * 16, 16, 18 * 16);
             ans = this.add.text(coords.x, coords.y, (n1 + n2).toString(), {
                 fontSize: '20px',
-                fontFamily: 'Droid Sans Mono',
+                fontFamily: 'Monospace',
                 fill: '#fff',
                 backgroundColor: '#000'
             });
@@ -154,7 +154,7 @@ var level1 = new Phaser.Class({
                 // Recreate the answer object with green font
                 this.add.text(coords.x, coords.y, ans.text, {
                     fontSize: '20px',
-                    fontFamily: 'Droid Sans Mono',
+                    fontFamily: 'Monospace',
                     fill: '#0f0',
                     backgroundColor: '#000'
                 });
@@ -206,7 +206,7 @@ var level1 = new Phaser.Class({
             // Print the equation on the floor
             question = this.add.text(baseX + 6 * 16, (2 + 5 * i) * 16, n1.toString() + ' - ' + n2.toString() + ' =', {
                 fontSize: '20px',
-                fontFamily: 'Droid Sans Mono',
+                fontFamily: 'Monospace',
                 fill: '#fff'
             }).setVisible(false);
             questions2[i] = question;
@@ -218,7 +218,7 @@ var level1 = new Phaser.Class({
             var coords = rand2(baseX + 16, baseX + 10 * 16, 16, 18 * 16);
             ans = this.add.text(coords.x, coords.y, (n1 - n2).toString(), {
                 fontSize: '20px',
-                fontFamily: 'Droid Sans Mono',
+                fontFamily: 'Monospace',
                 fill: '#fff',
                 backgroundColor: '#000'
             }).setVisible(false);
@@ -252,7 +252,7 @@ var level1 = new Phaser.Class({
                 // Recreate the answer object with green font
                 this.add.text(coords.x, coords.y, ans.text, {
                     fontSize: '20px',
-                    fontFamily: 'Droid Sans Mono',
+                    fontFamily: 'Monospace',
                     fill: '#0f0',
                     backgroundColor: '#000'
                 });
@@ -328,7 +328,7 @@ var level1 = new Phaser.Class({
             // Print the equation on the floor
             question = this.add.text(baseX_2 + 6 * 16, (2 + 5 * i) * 16, qstring, {
                 fontSize: '20px',
-                fontFamily: 'Droid Sans Mono',
+                fontFamily: 'Monospace',
                 fill: '#fff'
             }).setVisible(false);
             questions3[i] = question;
@@ -340,7 +340,7 @@ var level1 = new Phaser.Class({
             var coords = rand2(baseX_2 + 3 * 16, baseX_2 + 17 * 16, 9 * 16, 11 * 16);
             ans = this.add.text(coords.x, coords.y, (i % 2) ? n1.toString() : n2.toString(), {
                 fontSize: '20px',
-                fontFamily: 'Droid Sans Mono',
+                fontFamily: 'Monospace',
                 fill: '#fff',
                 backgroundColor: '#000'
             }).setVisible(false);
@@ -374,7 +374,7 @@ var level1 = new Phaser.Class({
                 // Recreate the answer object with green font
                 this.add.text(coords.x, coords.y, ans.text, {
                     fontSize: '20px',
-                    fontFamily: 'Droid Sans Mono',
+                    fontFamily: 'Monospace',
                     fill: '#0f0',
                     backgroundColor: '#000'
                 });
