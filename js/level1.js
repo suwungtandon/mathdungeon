@@ -64,6 +64,7 @@ var level1 = new Phaser.Class({
 
         // Add player
         player = this.physics.add.sprite(2 * 16, 10 * 16, 'player');
+        var playerCarrying = null;
 
         // Add player animations
         this.anims.create({
@@ -130,14 +131,19 @@ var level1 = new Phaser.Class({
 
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, ans, function (player, ans) {
-                ans.setX(player.getCenter().x);
-                ans.setY(player.getCenter().y);
+                if (!playerCarrying) {
+                    playerCarrying = ans;
+                } else if (playerCarrying === ans) {
+                    ans.setX(player.getCenter().x);
+                    ans.setY(player.getCenter().y);
+                }
             }, null, this);
 
             // As soon as the answer overlaps with the correct drop zone,
             // it is destroyed and a new one with green font is created.
             // This was done this way because of engine limitations.
             this.physics.add.overlap(zone, ans, function (ans, zone) {
+                playerCarrying = null;
 
                 // Destroy the zone so that success cannot be decremented more than once
                 zone.destroy();
@@ -223,14 +229,19 @@ var level1 = new Phaser.Class({
 
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, ans, function (player, ans) {
-                ans.setX(player.getCenter().x);
-                ans.setY(player.getCenter().y);
+                if (!playerCarrying) {
+                    playerCarrying = ans;
+                } else if (playerCarrying === ans) {
+                    ans.setX(player.getCenter().x);
+                    ans.setY(player.getCenter().y);
+                }
             }, null, this);
 
             // As soon as the answer overlaps with the correct drop zone,
             // it is destroyed and a new one with green font is created.
             // This was done this way because of engine limitations.
             this.physics.add.overlap(zone2.children.entries[i], ans, function (zone, ans) {
+                playerCarrying = null;
 
                 // Destroy the zone so that success cannot be decremented more than once
                 zone.destroy();
@@ -340,14 +351,19 @@ var level1 = new Phaser.Class({
 
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, ans, function (player, ans) {
-                ans.setX(player.getCenter().x);
-                ans.setY(player.getCenter().y);
+                if (!playerCarrying) {
+                    playerCarrying = ans;
+                } else if (playerCarrying === ans) {
+                    ans.setX(player.getCenter().x);
+                    ans.setY(player.getCenter().y);
+                }
             }, null, this);
 
             // As soon as the answer overlaps with the correct drop zone,
             // it is destroyed and a new one with green font is created.
             // This was done this way because of engine limitations.
             this.physics.add.overlap(zone3.children.entries[i], ans, function (zone, ans) {
+                playerCarrying = null;
 
                 // Destroy the zone so that success cannot be decremented more than once
                 zone.destroy();
