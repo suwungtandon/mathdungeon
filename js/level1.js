@@ -104,7 +104,7 @@ var level1 = new Phaser.Class({
                 n1 = rand();
                 n2 = rand();
             }
-            
+
             // Print the equation on the floor
             question = this.add.text(6 * 16, (2 + 5 * i) * 16, n1.toString() + ' + ' + n2.toString() + ' =', {
                 fontSize: '20px',
@@ -117,7 +117,7 @@ var level1 = new Phaser.Class({
             zone.create(14 * 16, (2 + 5 * i) * 16 + 12, 'zone');
 
             // Create the answer in a random coordinate
-            var coords = rand2(16, 10*16, 16, 18*16);
+            var coords = rand2(16, 10 * 16, 16, 18 * 16);
             ans = this.add.text(coords.x, coords.y, (n1 + n2).toString(), {
                 fontSize: '20px',
                 fontFamily: 'Droid Sans Mono',
@@ -127,13 +127,13 @@ var level1 = new Phaser.Class({
 
             // Enable physics for the answer object
             this.physics.world.enable(ans);
-            
+
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, ans, function (player, ans) {
                 ans.setX(player.getCenter().x);
                 ans.setY(player.getCenter().y);
             }, null, this);
-            
+
             // As soon as the answer overlaps with the correct drop zone,
             // it is destroyed and a new one with green font is created.
             // This was done this way because of engine limitations.
@@ -173,7 +173,7 @@ var level1 = new Phaser.Class({
         // --------------------------------------------------------------------------------------
         // ------------------------------=[ ROOM 2 ]=--------------------------------------------
         // --------------------------------------------------------------------------------------
-        var baseX = 20*16;
+        var baseX = 20 * 16;
         var success2 = 4;
 
         text2 = this.add.text(3 + 20 * 16, -22, 'Room 2: Complete the subtractions', {
@@ -196,7 +196,7 @@ var level1 = new Phaser.Class({
                 n1 = rand();
                 n2 = rand();
             }
-            
+
             // Print the equation on the floor
             question = this.add.text(baseX + 6 * 16, (2 + 5 * i) * 16, n1.toString() + ' - ' + n2.toString() + ' =', {
                 fontSize: '20px',
@@ -209,7 +209,7 @@ var level1 = new Phaser.Class({
             zone2.create(baseX + 14 * 16, (2 + 5 * i) * 16 + 12, 'zone').setVisible(false);
 
             // Create the answer in a random coordinate
-            var coords = rand2(baseX + 16, baseX + 10*16, 16, 18*16);
+            var coords = rand2(baseX + 16, baseX + 10 * 16, 16, 18 * 16);
             ans = this.add.text(coords.x, coords.y, (n1 - n2).toString(), {
                 fontSize: '20px',
                 fontFamily: 'Droid Sans Mono',
@@ -220,13 +220,13 @@ var level1 = new Phaser.Class({
 
             // Enable physics for the answer object
             this.physics.world.enable(ans);
-            
+
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, ans, function (player, ans) {
                 ans.setX(player.getCenter().x);
                 ans.setY(player.getCenter().y);
             }, null, this);
-            
+
             // As soon as the answer overlaps with the correct drop zone,
             // it is destroyed and a new one with green font is created.
             // This was done this way because of engine limitations.
@@ -277,7 +277,7 @@ var level1 = new Phaser.Class({
 
 
         // --------------------------------------------------------------------------------------
-        // --------------------------=[ ROOM TRANSITIONS ]----=----------------------------------
+        // --------------------------=[ ROOM TRANSITIONS ]---------------------------------------
         // --------------------------------------------------------------------------------------
         // Collider for room 1->2
         this.physics.add.collider(player, ladders.children.entries[0], function (player, ladder) {
@@ -285,7 +285,7 @@ var level1 = new Phaser.Class({
                 this.cameras.main.fadeIn(600);
                 text1.destroy();
                 player.x += 16 * 3;
-                for ( var i = 0; i<4; i++) {
+                for (var i = 0; i < 4; i++) {
                     questions2[i].setVisible(true);
                     answers2[i].setVisible(true);
                     zone2.children.entries[i].setVisible(true);
@@ -303,8 +303,11 @@ var level1 = new Phaser.Class({
 
         // Collide player with the last ladder to go to the next level
         this.physics.add.collider(player, ladders.children.entries[2], function (player, ladder) {
-            player.setVelocity(0, 0);
-            this.scene.start('level2');
+            this.cameras.main.fadeIn(600);
+            this.scene.transition({
+                target: 'level2',
+                duration: 100
+            })
         }, null, this);
     },
 
