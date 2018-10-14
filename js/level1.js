@@ -1,9 +1,14 @@
+// Generate random number between 1-100
 function rand() {
     return Math.floor((Math.random() * 100) + 1);
 }
 
-function rand2() {
-    return Math.floor((Math.random() * (20*16-40)) + 20);
+// Generate random number within the coordinates of a room
+function rand2(x1, x2, y1, y2) {
+    return {
+        x: Math.floor((Math.random() * (x2 - x1)) + x1),
+        y: Math.floor((Math.random() * (y2 - y1)) + y1)
+    };
 }
 
 var level1 = new Phaser.Class({
@@ -33,7 +38,7 @@ var level1 = new Phaser.Class({
         // Menu icon
         this.load.image('menu', 'assets/menu.png');
         // Box
-        this.load.image('box','assets/box.png')
+        this.load.image('box', 'assets/box.png')
         // Zone
         this.load.image('zone', 'assets/place.png');
     },
@@ -78,96 +83,224 @@ var level1 = new Phaser.Class({
         // Camera controls
         this.cameras.main.startFollow(player, true);
 
-        // -------------------=[ ROOM 1 ]=-------------------------------
+        // --------------------------------------------------------------------------------------
+        // ------------------------------=[ ROOM 1 ]=--------------------------------------------
+        // --------------------------------------------------------------------------------------
         var success = 4;
-        text1 = this.add.text(3, -22, 'Room 1: Complete the equations', {
+        text1 = this.add.text(3, -22, 'Room 1: Complete the additions', {
             fontSize: '16px',
             fill: '#ddd',
             fontFamily: 'Droid Sans',
             backgroundColor: '#88f'
         });
-        
+
         // Equations
-        for( var i=0; i<4; i++) {
+        for (var i = 0; i < 4; i++) {
+
+            // Generate two random numbers between 1-100
             n1 = rand();
             n2 = rand();
             while (n1 + n2 > 100) {
                 n1 = rand();
                 n2 = rand();
             }
-
-            question = this.add.text(6*16, (2+5*i)*16, n1.toString()+' + '+ n2.toString()+' =', {
+            
+            // Print the equation on the floor
+            question = this.add.text(6 * 16, (2 + 5 * i) * 16, n1.toString() + ' + ' + n2.toString() + ' =', {
                 fontSize: '20px',
                 fontFamily: 'Droid Sans Mono',
                 fill: '#fff'
             });
+
+            // Drop zone for the answer
             zone = this.physics.add.staticGroup();
+            zone.create(14 * 16, (2 + 5 * i) * 16 + 12, 'zone');
 
-            zone.create(14*16, (2+5*i)*16+12, 'zone');
-
-            ans = this.add.text(rand2(), rand2(), (n1+n2).toString(), {
+            // Create the answer in a random coordinate
+            var coords = rand2(16, 10*16, 16, 18*16);
+            ans = this.add.text(coords.x, coords.y, (n1 + n2).toString(), {
                 fontSize: '20px',
                 fontFamily: 'Droid Sans Mono',
                 fill: '#fff',
                 backgroundColor: '#000'
             });
-            this.physics.world.enable(ans);
 
+            // Enable physics for the answer object
+            this.physics.world.enable(ans);
+            
+            // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, ans, function (player, ans) {
                 ans.setX(player.getCenter().x);
                 ans.setY(player.getCenter().y);
             }, null, this);
+            
+            // As soon as the answer overlaps with the correct drop zone,
+            // it is destroyed and a new one with green font is created.
+            // This was done this way because of engine limitations.
+            this.physics.add.overlap(zone, ans, function (ans, zone) {
 
-            this.physics.add.overlap(zone, ans, function(ans, zone) {
+                // Destroy the zone so that success cannot be decremented more than once
                 zone.destroy();
+
+                // Get the current player coordinates
                 var coords = player.getCenter();
-                this.add.text(coords.x, coords.y, ans.text,  {
+
+                // Recreate the answer object with green font
+                this.add.text(coords.x, coords.y, ans.text, {
                     fontSize: '20px',
                     fontFamily: 'Droid Sans Mono',
                     fill: '#0f0',
                     backgroundColor: '#000'
                 });
+
+                // Destroy the current answer object
                 ans.destroy();
+
                 success -= 1;
                 if (!success) {
+                    // Flash the camera so that the player notices the ladder to the next room
                     this.cameras.main.flash();
+
+                    // Set the ladder visible
                     ladders.children.entries[0].setVisible(true);
                 }
             }, null, this); // DONT FORGET THIS!!!
 
+            // Do not let the answers go through walls (Does it even work?)
             this.physics.add.collider(walls, ans);
         }
 
+        // --------------------------------------------------------------------------------------
+        // ------------------------------=[ ROOM 2 ]=--------------------------------------------
+        // --------------------------------------------------------------------------------------
+        var baseX = 20*16;
+        var success2 = 4;
+
+        text2 = this.add.text(3 + 20 * 16, -22, 'Room 2: Complete the subtractions', {
+            fontSize: '16px',
+            fill: '#ddd',
+            fontFamily: 'Droid Sans',
+            backgroundColor: '#88f'
+        }).setVisible(false);
+
+        // Equations
+        var questions2 = [];
+        var answers2 = [];
+        zone2 = this.physics.add.staticGroup();
+        for (var i = 0; i < 4; i++) {
+
+            // Generate two random numbers between 1-100
+            n1 = rand();
+            n2 = rand();
+            while (n1 <= n2) {
+                n1 = rand();
+                n2 = rand();
+            }
+            
+            // Print the equation on the floor
+            question = this.add.text(baseX + 6 * 16, (2 + 5 * i) * 16, n1.toString() + ' - ' + n2.toString() + ' =', {
+                fontSize: '20px',
+                fontFamily: 'Droid Sans Mono',
+                fill: '#fff'
+            }).setVisible(false);
+            questions2[i] = question;
+
+            // Drop zone for the answer
+            zone2.create(baseX + 14 * 16, (2 + 5 * i) * 16 + 12, 'zone').setVisible(false);
+
+            // Create the answer in a random coordinate
+            var coords = rand2(baseX + 16, baseX + 10*16, 16, 18*16);
+            ans = this.add.text(coords.x, coords.y, (n1 - n2).toString(), {
+                fontSize: '20px',
+                fontFamily: 'Droid Sans Mono',
+                fill: '#fff',
+                backgroundColor: '#000'
+            }).setVisible(false);
+            answers2[i] = ans;
+
+            // Enable physics for the answer object
+            this.physics.world.enable(ans);
+            
+            // Player can pick up the answer object and carry it around
+            this.physics.add.overlap(player, ans, function (player, ans) {
+                ans.setX(player.getCenter().x);
+                ans.setY(player.getCenter().y);
+            }, null, this);
+            
+            // As soon as the answer overlaps with the correct drop zone,
+            // it is destroyed and a new one with green font is created.
+            // This was done this way because of engine limitations.
+            this.physics.add.overlap(zone2.children.entries[i], ans, function (zone, ans) {
+
+                // Destroy the zone so that success cannot be decremented more than once
+                zone.destroy();
+
+                // Get the current player coordinates
+                var coords = player.getCenter();
+
+                // Recreate the answer object with green font
+                this.add.text(coords.x, coords.y, ans.text, {
+                    fontSize: '20px',
+                    fontFamily: 'Droid Sans Mono',
+                    fill: '#0f0',
+                    backgroundColor: '#000'
+                });
+
+                // Destroy the current answer object
+                ans.destroy();
+
+                success2 -= 1;
+                if (!success2) {
+                    // Flash the camera so that the player notices the ladder to the next room
+                    this.cameras.main.flash();
+
+                    // Set the ladder visible
+                    ladders.children.entries[1].setVisible(true);
+                }
+            }, null, this); // DONT FORGET THIS!!!
+
+            // Do not let the answers go through walls (Does it even work?)
+            this.physics.add.collider(walls, ans);
+        }
+
+
+        // --------------------------------------------------------------------------------------
+        // ------------------------------=[ ROOM 3 ]=--------------------------------------------
+        // --------------------------------------------------------------------------------------
+        text3 = this.add.text(3 + 40 * 16, -22, 'Room 3: Go die', {
+            fontSize: '16px',
+            fill: '#ddd',
+            fontFamily: 'Droid Sans',
+            backgroundColor: '#88f'
+        }).setVisible(false);
+
+
+
+        // --------------------------------------------------------------------------------------
+        // --------------------------=[ ROOM TRANSITIONS ]----=----------------------------------
+        // --------------------------------------------------------------------------------------
         // Collider for room 1->2
         this.physics.add.collider(player, ladders.children.entries[0], function (player, ladder) {
             if (!success) {
                 this.cameras.main.fadeIn(600);
                 text1.destroy();
                 player.x += 16 * 3;
-                text2 = this.add.text(3+20*16, -22, 'Room 2: Whatevs', {
-                    fontSize: '16px',
-                    fill: '#ddd',
-                    fontFamily: 'Droid Sans',
-                    backgroundColor: '#88f'
-                });
+                for ( var i = 0; i<4; i++) {
+                    questions2[i].setVisible(true);
+                    answers2[i].setVisible(true);
+                    zone2.children.entries[i].setVisible(true);
+                }
             }
         }, null, this);
 
-        // -------------------=[ ROOM 2 ]=-------------------------------
         // Collider for room 2->3
         this.physics.add.collider(player, ladders.children.entries[1], function (player, ladder) {
             this.cameras.main.fadeIn(600);
             text2.destroy();
             player.x += 16 * 3;
-            text3 = this.add.text(3+40*16, -22, 'Room 3: Go die', {
-                fontSize: '16px',
-                fill: '#ddd',
-                fontFamily: 'Droid Sans',
-                backgroundColor: '#88f'
-            });
+            text3.setVisible(true);
         }, null, this);
 
-        // -------------------=[ ROOM 3 ]=-------------------------------
         // Collide player with the last ladder to go to the next level
         this.physics.add.collider(player, ladders.children.entries[2], function (player, ladder) {
             player.setVelocity(0, 0);
@@ -183,8 +316,8 @@ var level1 = new Phaser.Class({
             } else {
                 player.flipX = false;
             }
-            player.setVelocityX((this.input.activePointer.x - gameWidth / 2) * 2);
-            player.setVelocityY((this.input.activePointer.y - gameHeight / 2) * 2);
+            player.setVelocityX((this.input.activePointer.x - gameWidth / 2));
+            player.setVelocityY((this.input.activePointer.y - gameHeight / 2));
             player.anims.play('right', true);
         } else {
             player.setVelocityX(0);
