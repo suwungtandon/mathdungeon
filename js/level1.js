@@ -412,7 +412,7 @@ var level1 = new Phaser.Class({
 
                 // Get clear time
                 var currTime = new Date();
-                clearTimes[0] = (currTime - initTime) / 1000;
+                clearTimes[0][0] = (currTime - initTime) / 1000;
                 initTime = currTime;
 
                 this.cameras.main.fadeIn(600);
@@ -438,7 +438,7 @@ var level1 = new Phaser.Class({
 
                 // Get clear time
                 currTime = new Date();
-                clearTimes[1] = (currTime - initTime) / 1000;
+                clearTimes[0][1] = (currTime - initTime) / 1000;
                 initTime = currTime;
 
                 this.cameras.main.fadeIn(600);
@@ -464,9 +464,9 @@ var level1 = new Phaser.Class({
 
                 // Get clear time
                 currTime = new Date();
-                clearTimes[2] = (currTime - initTime) / 1000;
+                clearTimes[0][2] = (currTime - initTime) / 1000;
                 initTime = currTime;
-                // console.log(clearTimes);
+                // console.log(clearTimes[0]);
 
                 this.add.text(50 * 16, 8 * 16, 'Level Complete!', {
                     fontSize: '32px',
