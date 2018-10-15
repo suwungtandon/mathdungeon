@@ -109,7 +109,7 @@ var level3 = new Phaser.Class({
             shape.create(4 * 16 - 8 + arr[i] * 16 * 4, 11*16 / 2, shape_names[i]);
 
             // Drop zone for the answer
-            zone.create(4 * 16 + i * 16 * 4, 18 * 16, 'zone_' + shape_names[i]);
+            zone.create(4 * 16 + i * 16 * 4, 16 * 16, 'zone_' + shape_names[i]);
 
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, shape, function (player, shape) {
