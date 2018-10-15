@@ -155,12 +155,9 @@ var level2 = new Phaser.Class({
 
 
         boxes = box.children.entries
-        boxes[0].number = this.add.text(boxes[0].x-8,boxes[0].y-24, '10', {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        boxes[1].number = this.add.text(boxes[1].x-8,boxes[1].y-24, '20', {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        boxes[2].number = this.add.text(boxes[2].x-8,boxes[2].y-24, '30', {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        boxes[3].number = this.add.text(boxes[3].x-8,boxes[3].y-24, '40', {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        boxes[4].number = this.add.text(boxes[4].x-8,boxes[4].y-24, '50', {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-
+        for (var i = 0; i < boxes.length; i++) {
+            boxes[i].number = this.add.text(boxes[i].x-8,boxes[i].y-24, String((i+1)*10), {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
+        }
         
         // Add player
         player = this.physics.add.sprite(2*16, 10*16, 'player');
@@ -188,7 +185,7 @@ var level2 = new Phaser.Class({
         //console.log(undead_size)
         for(var i = 0;i<undead_size ;i++){
             type = rand()%5
-            if(i > 4)
+            if(i > 3)
                 undeads.push(this.physics.add.sprite(8*16+(i%4)*16,4*16,undead_type[type]))
             else
                 undeads.push(this.physics.add.sprite(8*16+(i%4)*16,2*16,undead_type[type]))
@@ -199,7 +196,7 @@ var level2 = new Phaser.Class({
         //console.log(orc_size)
         for(var i = 0;i<orc_size ;i++){
             type = rand()%4
-            if(i > 4)
+            if(i > 3)
                 orcs.push(this.physics.add.sprite(2*16+(i%4)*16,4*16,orc_type[type]))
             else
                 orcs.push(this.physics.add.sprite(2*16+(i%4)*16,2*16,orc_type[type]))
@@ -211,27 +208,21 @@ var level2 = new Phaser.Class({
 
         l = ['1st','2nd','3rd','4th','5th']
         obj_choice = []
-        obj_choice.push(l[rand()%5])
-        obj_choice.push(l[rand()%5])
-        obj_choice.push(l[rand()%5])
-        this.add.text(43*16-8,4*16-8 , obj_choice[0], {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        obj.create(47 * 16 - 8, 4 * 16 , 'key1');
-        obj.create(49 * 16 - 8, 4 * 16 , 'key2');
-        obj.create(51 * 16 - 8, 4 * 16 , 'key3');
-        obj.create(53 * 16 - 8, 4 * 16 , 'key4');  
-        obj.create(55 * 16 - 8, 4 * 16 , 'key5');
+        for (var i = 0; i < 3; i++) 
+             obj_choice.push(l[rand()%5])
+
+        for (var i = 0; i < obj_choice.length; i++) 
+            this.add.text(43*16-8,(4+4*i)*16-8 , obj_choice[i], {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
+        
+        for (var i = 0; i < 5; i++) 
+             obj.create((2*i*16) +47 * 16 - 8, 4 * 16 , 'key'+String(i+1));
         this.add.text(43*16-8,8*16-8 , obj_choice[1], {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        obj.create(47 * 16 - 8, 8 * 16, 'book1');
-        obj.create(49 * 16 - 8, 8 * 16, 'book2');
-        obj.create(51 * 16 - 8, 8 * 16, 'book3');
-        obj.create(53 * 16 - 8, 8 * 16, 'book4');
-        obj.create(55 * 16 - 8, 8 * 16, 'book5');
+        for (var i = 0; i < 5; i++) 
+             obj.create((2*i*16) +47 * 16 - 8, 8 * 16 , 'book'+String(i+1));
         this.add.text(43*16-8,12*16-8 , obj_choice[2], {fontSize: '12px',fontFamily: 'Droid Sans Mono',fill: '#fff'})
-        obj.create(47 * 16 - 8, 12 * 16, 'staff1');
-        obj.create(49 * 16 - 8, 12 * 16, 'staff2');
-        obj.create(51 * 16 - 8, 12 * 16, 'staff3');
-        obj.create(53 * 16 - 8, 12 * 16, 'staff4');
-        obj.create(55 * 16 - 8, 12 * 16, 'staff5');
+        for (var i = 0; i < 5; i++) 
+             obj.create((2*i*16) +47 * 16 - 8, 12 * 16 , 'staff'+String(i+1));
+
         objs = obj.children.entries
         for (var i = 0; i < objs.length; i++) {
             objs[i].mark = this.physics.add.staticGroup();
@@ -240,21 +231,25 @@ var level2 = new Phaser.Class({
         }
 
         // Add player animations
-        this.anims.create({key: 'right',frames: this.anims.generateFrameNumbers('player', { start: 1, end: 3 }),frameRate: 10,})
-         this.anims.create({key: 'wait_o1',frames: this.anims.generateFrameNumbers('orc1',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_o2',frames: this.anims.generateFrameNumbers('orc2',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_o3',frames: this.anims.generateFrameNumbers('orc3',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_o4',frames: this.anims.generateFrameNumbers('orc4',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_d0',frames: this.anims.generateFrameNumbers('demon0',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_d1',frames: this.anims.generateFrameNumbers('demon1',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_d2',frames: this.anims.generateFrameNumbers('demon2',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_d3',frames: this.anims.generateFrameNumbers('demon3',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_d4',frames: this.anims.generateFrameNumbers('demon4',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_u0',frames: this.anims.generateFrameNumbers('undead0',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_u1',frames: this.anims.generateFrameNumbers('undead1',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_u2',frames: this.anims.generateFrameNumbers('undead2',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_u3',frames: this.anims.generateFrameNumbers('undead3',{ start: 0, end: 3}),frameRate: 5,})
-         this.anims.create({key: 'wait_u4',frames: this.anims.generateFrameNumbers('undead4',{ start: 0, end: 3}),frameRate: 5,})
+         this.anims.create({key: 'right',frames: this.anims.generateFrameNumbers('player', { start: 1, end: 3 }),frameRate: 10,})
+         for (var i = 0; i < orc_type.length; i++) {
+             s = 'wait_o'
+             n = orc_type[i][orc_type[i].length-1]
+             s += n             
+             this.anims.create({key: s,frames: this.anims.generateFrameNumbers(orc_type[i],{ start: 0, end: 3}),frameRate: 5,})
+         }
+         for (var i = 0; i < demon_type.length; i++) {
+             s = 'wait_d'
+             n = demon_type[i][demon_type[i].length-1]
+             s += n             
+             this.anims.create({key: s,frames: this.anims.generateFrameNumbers(demon_type[i],{ start: 0, end: 3}),frameRate: 5,})
+         }
+         for (var i = 0; i < undead_type.length; i++) {
+             s = 'wait_u'
+             n = undead_type[i][undead_type[i].length-1]
+             s += n             
+             this.anims.create({key: s,frames: this.anims.generateFrameNumbers(undead_type[i],{ start: 0, end: 3}),frameRate: 5,})
+         }
          this.anims.create({key: 'wait_p',frames: [{ key: 'player', frame: 0 }],frameRate: 10})
 
 
@@ -266,10 +261,64 @@ var level2 = new Phaser.Class({
         this.physics.add.collider(box,box,this.boxFix);
         this.physics.add.collider(player, walls);
  
+        var initTime = new Date();
+        this.physics.add.collider(player, ladder1, function(player,ladder){
+        if(question1.text == String(orcs.length) && question2.text == String(undeads.length) && question3.text == String(demons.length)){
+            this.cameras.main.fadeIn(600);
+            player.x += 16 * 3;
+            stage = 'Stage2'   
+            var currTime = new Date();
+            clearTimes[1][0] = (currTime - initTime) / 1000;
+            initTime = currTime;    
+        }
 
-        this.physics.add.collider(player, ladder1, this.nextStage1, null, this);
-        this.physics.add.collider(player, ladder2, this.nextStage2, null, this);
-        this.physics.add.collider(player, laddersEnd, this.nextLevel, null, this);
+        }, null, this);
+        this.physics.add.collider(player, ladder2, function (player, ladders) {
+            if(boxesPlaced)
+            {
+                childs = box.children.entries
+                if(childs[0].x < childs[1].x && childs[1].x < childs[2].x && childs[2].x < childs[3].x && childs[3].x < childs[4].x){ //correct order of boxes
+                    this.cameras.main.fadeIn(600);
+                    player.x += 16 * 3;
+                    console.log(box.children.entries[0].x)      
+                    StageCompleted = false 
+                    stage = 'Stage3'
+                    var currTime = new Date();
+                    time = (currTime - initTime) / 1000;
+                    console.log(time)
+                    clearTimes[1][1] = time
+                    initTime = currTime;   
+
+                }
+
+            }
+            else{ //boxes not placed
+               this.cameras.main.fadeIn(600);
+               player.x -= 6*16
+               player.y += 2*16
+               
+            }
+        }, null, this);
+        this.physics.add.collider(player, laddersEnd, function(player, laddersEnd) {
+        if (player.key.texture.key == 'key'+obj_choice[0][0] && player.book.texture.key == 'book'+obj_choice[1][0] && player.staff.texture.key == 'staff'+obj_choice[2][0]){
+
+                var currTime = new Date();
+                time = (currTime - initTime) / 1000;
+                clearTimes[1][2] = time
+                console.log(time)
+                initTime = currTime;    
+                this.add.text(50 * 16, 8 * 16, 'Level Complete!', {
+                    fontSize: '32px',
+                    fill: '#cfc',
+                    fontFamily: 'Droid Sans'
+                });
+                this.cameras.main.fadeOut(1000);
+                this.scene.transition({
+                    target: 'level3',
+                    duration: 2000,
+                    moveBelow: true
+                });}
+        },null, this);
 
         this.physics.add.collider(player,obj,this.objTouched);
 
@@ -277,7 +326,7 @@ var level2 = new Phaser.Class({
         this.cameras.main.startFollow(player, true);
 
         //Stage
-        var initTime = new Date();
+        
     },
 
     update: function update() {
@@ -298,9 +347,6 @@ var level2 = new Phaser.Class({
             
         
         }
-        //orc0.anims.play('wait_o0', true);
-
-
 
         for (var i = 0; i < orcs.length; i++) {
             //console.log(orcs.length)
@@ -429,59 +475,5 @@ var level2 = new Phaser.Class({
             console.log("staff")
         }
     },
-    nextStage1: function(player,ladder){
-        if(question1.text == String(orcs.length) && question2.text == String(undeads.length) && question3.text == String(demons.length)){
-            this.cameras.main.fadeIn(600);
-            player.x += 16 * 3;
-            stage = 'Stage2'   
-            var currTime = new Date();
-            //clearTimes[3] = (currTime - initTime) / 1000;
-            initTime = currTime;         
-        }
-
-    },
-    nextStage2: function (player, ladders) {
-        
-        if(boxesPlaced)
-        {
-            childs = box.children.entries
-            if(childs[0].x < childs[1].x && childs[1].x < childs[2].x && childs[2].x < childs[3].x && childs[3].x < childs[4].x){ //correct order of boxes
-                this.cameras.main.fadeIn(600);
-                player.x += 16 * 3;
-                console.log(box.children.entries[0].x)      
-                StageCompleted = false 
-                stage = 'Stage3'
-                var currTime = new Date();
-                //clearTimes[4] = (currTime - initTime) / 1000;
-                initTime = currTime;   
-
-            }
-
-        }
-        else{ //boxes not placed
-           this.cameras.main.fadeIn(600);
-           player.x -= 6*16
-           player.y += 2*16
-           
-        }
-    },
-
-    nextLevel: function nextLevel(player, laddersEnd) {
-        if (player.key.texture.key == 'key'+obj_choice[0][0] && player.book.texture.key == 'book'+obj_choice[1][0] && player.staff.texture.key == 'staff'+obj_choice[2][0]){
-                var currTime = new Date();
-                //clearTimes[5] = (currTime - initTime) / 1000;
-                initTime = currTime;  
-                this.add.text(50 * 16, 8 * 16, 'Level Complete!', {
-                    fontSize: '32px',
-                    fill: '#cfc',
-                    fontFamily: 'Droid Sans'
-                });
-                this.cameras.main.fadeOut(1000);
-                this.scene.transition({
-                    target: 'level3',
-                    duration: 2000,
-                    moveBelow: true
-                });    }
-    }
 
 })
