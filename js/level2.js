@@ -174,7 +174,7 @@ var level2 = new Phaser.Class({
         //console.log(demon_size)
         for(var i = 0;i<demon_size ;i++){
             type = rand()%5
-            if(i > 4)
+            if(i > 3)
                 demons.push(this.physics.add.sprite(14*16+(i%4)*16,4*16,demon_type[type]))
             else
                 demons.push(this.physics.add.sprite(14*16+(i%4)*16,2*16,demon_type[type]))
@@ -307,6 +307,7 @@ var level2 = new Phaser.Class({
                 clearTimes[1][2] = time
                 console.log(time)
                 initTime = currTime;    
+                player.x -= 32
                 this.add.text(50 * 16, 8 * 16, 'Level Complete!', {
                     fontSize: '32px',
                     fill: '#cfc',
@@ -317,7 +318,7 @@ var level2 = new Phaser.Class({
                     target: 'level3',
                     duration: 2000,
                     moveBelow: true
-                });}
+        });}
         },null, this);
 
         this.physics.add.collider(player,obj,this.objTouched);
