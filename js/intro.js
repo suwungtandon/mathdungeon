@@ -15,11 +15,21 @@ var intro = new Phaser.Class({
         this.load.image('logo', 'assets/logo.png');
     },
     create: function create() {
-        this.cameras.main.fadeIn(1000);
         logo = this.physics.add.sprite(gameWidth/2, gameHeight/2, 'logo')
             .setScale(0.4)
             .setInteractive();
-        this.add.text(gameWidth/2, gameHeight/2 + 30, 'Click to play!');
+        text = this.add.text(gameWidth/2, gameHeight/2 + 30, 'Click to play!');
+        this.physics.world.enable(text);
+        text.setInteractive();
+        text.on('pointerdown', function () {
+            this.cameras.main.fadeOut(50);
+            this.scene.transition({
+                target: 'level1',
+                duration: 500,
+                moveBelow: true,
+                sleep: true
+            });
+        }, this);
         logo.on('pointerdown', function () {
             this.cameras.main.fadeOut(50);
             this.scene.transition({
