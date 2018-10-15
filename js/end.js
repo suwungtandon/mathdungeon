@@ -6,7 +6,7 @@ var end = new Phaser.Class({
             Phaser.Scene.call(this, { key: 'end' });
         },
 
-    preload: function preload() { 
+    preload: function preload() {
 
     },
     create: function create() {
@@ -20,19 +20,19 @@ var end = new Phaser.Class({
         x += 16
         y += 64;
         this.add.text(x, y, 'Your clear times:');
-        y += verticalSpace*1.5;
-        for(var level=0; level<clearTimes.length; level++) {
+        y += verticalSpace * 1.5;
+        for (var level = 1; level < clearTimes.length + 1; level++) {
             this.add.text(x, y, 'Level ' + level.toString());
-            y += verticalSpace*1.2;
-            for(var room=0; room<clearTimes[level].length; room++) {
+            y += verticalSpace * 1.2;
+            for (var room = 1; room < clearTimes[level].length + 1; room++) {
                 this.add.text(x, y, '\t\t\tRoom ' + room.toString() + ':\t' + clearTimes[level][room].toString());
                 y += verticalSpace;
             }
             y += verticalSpace;
         }
-        
+
     },
-    update: function update() { 
-        
+    update: function update() {
+
     },
 });
