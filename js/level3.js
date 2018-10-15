@@ -40,20 +40,17 @@ var level3 = new Phaser.Class({
         this.load.image('zone_square', 'assets/level3/zone_square.png');
         this.load.image('zone_circle', 'assets/level3/zone_circle.png');
         this.load.image('zone_r', 'assets/level3/red_zone.png');
-        this.load.image('zone_b', 'assets/level3/blue_zone.png');
         this.load.image('zone_g', 'assets/level3/green_zone.png');
+        this.load.image('zone_b', 'assets/level3/blue_zone.png');
         //Shapes
         this.load.image('triangle', 'assets/level3/triangle.png');
         this.load.image('rectangle', 'assets/level3/rectangle.png');
         this.load.image('square', 'assets/level3/square.png');
         this.load.image('circle', 'assets/level3/circle.png');
         //Colors
-        this.load.image('circle_r', 'assets/level3/pearl_red.png');
-        this.load.image('circle_b', 'assets/level3/pearl_blue.png');
-        this.load.image('circle_g', 'assets/level3/pearl_green.png');
         this.load.image('rect_r', 'assets/level3/book_red.png');
-        this.load.image('rect_b', 'assets/level3/book_blue.png');
         this.load.image('rect_g', 'assets/level3/book_green.png');
+        this.load.image('rect_b', 'assets/level3/book_blue.png');
     },
 
     create: function create() {
@@ -77,6 +74,7 @@ var level3 = new Phaser.Class({
 
         // Add player
         player = this.physics.add.sprite(2 * 16, 10 * 16, 'player');
+        var playerCarrying = null;
 
         // Add player animations
         this.anims.create({
@@ -124,14 +122,19 @@ var level3 = new Phaser.Class({
 
             // Player can pick up the answer object and carry it around
             this.physics.add.overlap(player, shape, function (player, shape) {
-                shape.setX(player.getCenter().x);
-                shape.setY(player.getCenter().y);
+                if (!playerCarrying) {
+                    playerCarrying = shape;
+                } else if (playerCarrying === shape) {
+                    shape.setX(player.getCenter().x);
+                    shape.setY(player.getCenter().y);
+                }
             }, null, this);
 
             // As soon as the answer overlaps with the correct drop zone,
             // it is destroyed and a new one with green font is created.
             // This was done this way because of engine limitations.
             this.physics.add.overlap(zone.children.entries[i], shape.children.entries[i], function (zone, shape) {
+                playerCarrying = null;
 
                 // Destroy the zone so that success cannot be decremented more than once
                 zone.destroy();
@@ -199,38 +202,119 @@ var level3 = new Phaser.Class({
             //backgroundColor: '#88f'
         }).setVisible(false);
 
-        shape_colors = this.physics.add.group();
+        
+        color = this.physics.add.group();
+        colored_zone = this.physics.add.staticGroup();
+        
+        var color_success = 3;
+        var colors = ['r', 'g', 'b'];  
+        var arr = shuffle([0, 1, 2]);
+
+        // Creating shapes
+        for (var i = 0; i < 3; i++) {
+            color.create(44 * 16 - 8 + arr[i] * 16 * 4, 11*16 / 2, 'rect_' + colors[i]);
+
+            // Drop zone for the answer
+            colored_zone.create(44 * 16 + i * 16 * 4, 16 * 16, 'zone_' + colors[i]);
+
+            // Player can pick up the answer object and carry it around
+            this.physics.add.overlap(player, color, function (player, color) {
+                if (!playerCarrying) {
+                    playerCarrying = color;
+                } else if (playerCarrying === color) {
+                    color.setX(player.getCenter().x);
+                    color.setY(player.getCenter().y);
+                }
+            }, null, this);
+
+            // As soon as the answer overlaps with the correct drop zone,
+            // it is destroyed and a new one with green font is created.
+            // This was done this way because of engine limitations.
+            this.physics.add.overlap( colored_zone.children.entries[i], color.children.entries[i], function ( colored_zone, color) {
+                playerCarrying = null;
+
+                // Destroy the zone so that success cannot be decremented more than once
+                colored_zone.destroy();
+
+                // Get the current player coordinates
+                var coords = player.getCenter();
+
+                // Recreate the answer object with green font
+                this.add.image(coords.x, coords.y, color.texture.key);
+
+                // Destroy the current answer object
+                color.destroy();
+
+                color_success -= 1;
+                if (!color_success) {
+                    // Flash the camera so that the player notices the ladder to the next room
+                    this.cameras.main.flash();
+
+                    // Set the ladder visible
+                    ladders.children.entries[2].setVisible(true);
+                }
+            }, null, this); // DONT FORGET THIS!!!
+
+            // Do not let the answers go through walls (Does it even work?)
+            this.physics.add.collider(walls, color);
+        }
 
         // --------------------------------------------------------------------------------------
         // --------------------------=[ ROOM TRANSITIONS ]---------------------------------------
         // --------------------------------------------------------------------------------------
+        // Saving clear times of rooms
+        var initTime = new Date();
+
         // Collider for room 1->2
         this.physics.add.collider(player, ladders.children.entries[0], function (player, ladder) {
             if (!success) {
+                // Get clear time
+                var currTime = new Date();
+                clearTimes[2][0] = (currTime - initTime) / 1000;
+                initTime = currTime;
+
                 this.cameras.main.fadeIn(600);
+                
                 text1.destroy();
-                player.x += 16 * 3;
                 text2.setVisible(true);
+                
+                player.x += 16 * 3;
             }
         }, null, this);
 
         // Collider for room 2->3
         this.physics.add.collider(player, ladders.children.entries[1], function (player, ladder){
             if(boxesPlaced){
+                //Get clear time
+                currTime = new Date();
+                clearTimes[2][1] = (currTime - initTime) / 1000;
+                initTime = currTime;
+
                 this.cameras.main.fadeIn(600);
-                player.x += 16
+                
                 text2.destroy(); 
                 text3.setVisible(true);
+                
+                player.x += 16
             }
         }, null, this);
 
         // Collide player with the last ladder to go to the next level
         this.physics.add.collider(player, ladders.children.entries[2], function (player, ladder) {
-            this.cameras.main.fadeIn(600);
-            this.scene.transition({
-                target: 'end',
-                duration: 250
-            })
+            if (!color_success) {
+                //Get clear time
+                currTime = new Date();
+                clearTimes[2][2] = (currTime - initTime) / 1000;
+                initTime = currTime;
+
+                this.cameras.main.fadeIn(600);
+
+                this.scene.transition({
+                    target: 'end',
+                    duration: 250,
+                    stop: true
+                })
+            }
         }, null, this);
 
     },
