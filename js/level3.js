@@ -186,7 +186,7 @@ var level3 = new Phaser.Class({
         this.physics.add.collider(player, ladders.children.entries[2], function (player, ladder) {
             this.cameras.main.fadeIn(600);
             this.scene.transition({
-                target: 'level2',
+                target: 'end',
                 duration: 250
             })
         }, null, this);
