@@ -403,7 +403,6 @@ var level1 = new Phaser.Class({
         // --------------------------------------------------------------------------------------
 
         // Saving clear times of rooms
-        var clearTimes = [];
         var initTime = new Date();
 
         // Collider for room 1->2
