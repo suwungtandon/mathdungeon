@@ -21,11 +21,11 @@ var end = new Phaser.Class({
         y += 64;
         this.add.text(x, y, 'Your clear times:');
         y += verticalSpace * 1.5;
-        for (var level = 1; level < clearTimes.length + 1; level++) {
-            this.add.text(x, y, 'Level ' + level.toString());
+        for (var level = 0; level < clearTimes.length; level++) {
+            this.add.text(x, y, 'Level ' + (level+1).toString());
             y += verticalSpace * 1.2;
-            for (var room = 1; room < clearTimes[level].length + 1; room++) {
-                this.add.text(x, y, '\t\t\tRoom ' + room.toString() + ':\t' + clearTimes[level][room].toString());
+            for (var room = 0; room < clearTimes[level].length; room++) {
+                this.add.text(x, y, '\t\t\tRoom ' + (room+1).toString() + ':\t' + clearTimes[level][room].toString());
                 y += verticalSpace;
             }
             y += verticalSpace;
