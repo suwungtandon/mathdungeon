@@ -289,13 +289,14 @@ var level3 = new Phaser.Class({
                 currTime = new Date();
                 clearTimes[2][1] = (currTime - initTime) / 1000;
                 initTime = currTime;
+                console.log(initTime)
 
                 this.cameras.main.fadeIn(600);
                 
                 text2.destroy(); 
                 text3.setVisible(true);
                 
-                player.x += 16
+                player.x += 4*16
             }
         }, null, this);
 
